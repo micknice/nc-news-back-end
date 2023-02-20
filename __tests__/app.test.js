@@ -38,9 +38,13 @@ describe('GET /api/topics', () => {
     })
 })
 describe('errors', () => {
-    test('server returns 404 when recieves get request to undefined endpoint', () => {
+    test('server returns 404 and not found msg when recieves get request to undefined endpoint', () => {
         return request(app)
         .get('/api/topiary')
         .expect(404)
+        .then(response => {
+            const body = response.body;
+            expect(body).toEqual({msg: 'not found'})
+        })
     })
 })
