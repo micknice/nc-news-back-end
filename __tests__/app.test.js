@@ -3,6 +3,8 @@ const request = require('supertest');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data');
 const seed = require('../db/seeds/seed');
+const jestSort = require('jest-sorted');
+
 
 beforeEach(() => seed(testData));
 
@@ -20,7 +22,7 @@ describe('api', () => {
 
 })
 describe('GET /api/topics', () => {
-    test('get  /api/topics request reponds with topics object containing an array of topic objects ', () => {
+    test('get  /api/topics request responds with topics object containing an array of topic objects ', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
@@ -34,6 +36,39 @@ describe('GET /api/topics', () => {
                         })       
             });
 
+        })
+    })
+})
+describe('GET /api/articles', () => {
+    test('get /api/articles request responds with articles object containing an array of articles objects', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(response => {
+            const resBodyArticles = response.body.articles;
+            expect(resBodyArticles.length).toBe(12)
+            resBodyArticles.forEach(article => {
+                console.log(typeof article.created_at)
+                expect(article).toMatchObject({
+                    author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number)
+
+                })
+            })
+        })
+    })
+    test('get /api/articles request returns array sorted by date created in descending order', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(response => {
+            const articles = response.body.articles;                      
+            expect(articles).toBeSortedBy('created_at', {descending: true, coerce: true});                    
         })
     })
 })
