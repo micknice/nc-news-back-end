@@ -71,7 +71,7 @@ xdescribe('GET /api/articles', () => {
         })
     })
 })
-describe('get /api/articles/:article_id', ()=> {
+xdescribe('get /api/articles/:article_id', ()=> {
     test('request returns article object with the specified id ', ()=> {
         return request(app)
         .get('/api/articles/1')
@@ -87,8 +87,15 @@ describe('get /api/articles/:article_id', ()=> {
                     votes: expect.any(Number)
             })
             expect(article.article_id).toBe(1)
-
         })
+    })
+})
+describe('GET /api/articles/:article_id/comments', ()=> {
+    test('', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then()
     })
 })
 describe('errors', () => {

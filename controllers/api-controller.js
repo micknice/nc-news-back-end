@@ -7,12 +7,4 @@ const getApi = (req, res, next) => {
 }
 
 
-
-
-
-
-
-
-
-
 module.exports = { getApi };

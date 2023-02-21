@@ -4,7 +4,6 @@ const { handleServerErrors } = require('./error-handling-controller');
 
 
 const getTopics = (req, res, next) => {
-
     return fetchTopics()
     .then(result => {
     res.status(200).send({topics: result})

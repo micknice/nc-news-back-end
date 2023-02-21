@@ -43,8 +43,18 @@ const fetchArticleById = (article_id) => {
         }
         return article;
     })
+
+}
+
+const fetchCommentsByArticleId = (article_id) => {
+    return db.query(
+        `
+        SELECT
+        `, [article_id]
+    )
+
 }
 
 
 
-module.exports = { fetchTopics, fetchArticles, fetchArticleById };
+module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId };
