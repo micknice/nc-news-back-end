@@ -9,7 +9,6 @@ const handleServerErrors = (err, req, res, next) => {
 }
 
 
-
 const handlePSQL400Error = (err, req, res, next) => {
     console.log(err)
     if (err.code === '22P02') {

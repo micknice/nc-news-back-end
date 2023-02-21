@@ -34,9 +34,8 @@ const fetchArticleById = (article_id) => {
         `, [article_id]
     )
     .then(result => {
-        const article = result.rows;
-        console.log(article)
-        if (article.length === 0) {
+        const article = result.rows[0];
+        if (!article) {
             return Promise.reject({
                 status: 404,
                 msg: 'no article found'

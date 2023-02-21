@@ -77,7 +77,7 @@ describe('get /api/articles/:article_id', ()=> {
         .get('/api/articles/1')
         .expect(200)
         .then(response => {
-            const article = response.body.articles[0]
+            const article = response.body.articles
             expect(article).toMatchObject({
                 author: expect.any(String),
                     title: expect.any(String),
