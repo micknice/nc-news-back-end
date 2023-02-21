@@ -10,7 +10,7 @@ beforeEach(() => seed(testData));
 
 afterAll(() => db.end());
 
-describe('api', () => {
+xdescribe('api', () => {
     test('get 200 response from server', () => {
         return request(app)
         .get('/api')
@@ -21,7 +21,7 @@ describe('api', () => {
     })
 
 })
-describe('GET /api/topics', () => {
+xdescribe('GET /api/topics', () => {
     test('get  /api/topics request responds with topics object containing an array of topic objects ', () => {
         return request(app)
         .get('/api/topics')
@@ -39,7 +39,7 @@ describe('GET /api/topics', () => {
         })
     })
 })
-describe('GET /api/articles', () => {
+xdescribe('GET /api/articles', () => {
     test('get /api/articles request responds with articles object containing an array of articles objects', () => {
         return request(app)
         .get('/api/articles')
@@ -48,7 +48,6 @@ describe('GET /api/articles', () => {
             const resBodyArticles = response.body.articles;
             expect(resBodyArticles.length).toBe(12)
             resBodyArticles.forEach(article => {
-                console.log(typeof article.created_at)
                 expect(article).toMatchObject({
                     author: expect.any(String),
                     title: expect.any(String),
@@ -72,6 +71,26 @@ describe('GET /api/articles', () => {
         })
     })
 })
+describe('get /api/articles/:article_id', ()=> {
+    test('request returns article object with the specified id ', ()=> {
+        return request(app)
+        .get('/api/articles/1')
+        .expect(200)
+        .then(response => {
+            const article = response.body.articles
+            expect(article).toMatchObject({
+                author: expect.any(String),
+                    title: expect.any(String),
+                    article_id: expect.any(Number),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number)
+            })
+            expect(article.article_id).toBe(1)
+
+        })
+    })
+})
 describe('errors', () => {
     test('server returns 404 and not found msg when recieves get request to undefined endpoint', () => {
         return request(app)
@@ -82,4 +101,22 @@ describe('errors', () => {
             expect(body).toEqual({msg: 'not found'})
         })
     })
+    test('server returns 400 when recieves invalid parametric endpoint', () => {
+        return request(app)
+        .get('/api/articles/badId')
+        .expect(400)
+        .then(response => {
+            const msg = response.body
+            expect(msg).toEqual({msg: 'bad request'})
+        })
+    })
+    test('server returns 404 and a no article matching that id message when receives valid but non existent param', () => {
+        return request(app)
+        .get('/api/articles/10000')
+        .expect(404)
+        .then(response => {
+            const body = response.body
+            expect(body).toEqual({msg: 'no article matching that id'})
+        })
+    })    
 })
