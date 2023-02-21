@@ -151,4 +151,13 @@ describe('errors', () => {
             expect(body).toEqual({msg: 'no article matching that id'})
         })
     })    
+    test('server returns 404 and a no comments matching that id message when receives valid param with no comments in the db', () => {
+        return request(app)
+        .get('/api/articles/10000/comments')
+        .expect(404)
+        .then(response => {
+            const body = response.body
+            expect(body).toEqual({msg: 'no comments matching that id'})
+        })
+    })    
 })

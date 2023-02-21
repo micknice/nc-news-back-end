@@ -19,9 +19,8 @@ const handleCustomErrors = (err, req, res, next) => {
     console.log('handle custom errors', err)
     if(err.msg === 'no article found' && err.status === 404) {
         res.status(404).send({msg: 'no article matching that id'})
-    } else if (err.msg === 'no comments found' && err.msg === 404) {
-        res.status(404).send({msg: 'no comments mathcing that id'})
-
+    } else if (err.msg === 'no comments found' && err.status === 404) {
+        res.status(404).send({msg: 'no comments matching that id'})
     } else {
         next(err);
     }
