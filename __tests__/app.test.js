@@ -91,11 +91,36 @@ xdescribe('get /api/articles/:article_id', ()=> {
     })
 })
 describe('GET /api/articles/:article_id/comments', ()=> {
-    test('', () => {
+    test('valid request -server responds with an array of comments objects', () => {
         return request(app)
         .get('/api/articles/1/comments')
         .expect(200)
-        .then()
+        .then(response => {
+            const comments = response.body.comments
+            expect(Array.isArray(comments)).toBe(true)
+            comments.forEach(comment => {
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    article_id: expect.any(Number)
+                })
+            })
+        })
+    })
+    test('comments object array is ordered from most recent', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(response => {
+            const comments = response.body.comments.map(x => x = parseInt(x.created_at.slice(0, 9).replace(/-/g, '')));
+            console.log(comments)
+            for (let i = 0; i < comments.length - 1; i++) {
+                expect(comments[i]).toBeGreaterThanOrEqual(comments[i + 1]);
+            }                
+        })       
     })
 })
 describe('errors', () => {
