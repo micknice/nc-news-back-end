@@ -3,6 +3,8 @@ const request = require('supertest');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data');
 const seed = require('../db/seeds/seed');
+const jestSort = require('jest-sorted');
+
 
 beforeEach(() => seed(testData));
 
@@ -60,17 +62,13 @@ describe('GET /api/articles', () => {
             })
         })
     })
-    test('get /api/articles request returns array sorted by date created in ascending order', () => {
+    test('get /api/articles request returns array sorted by date created in descending order', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
         .then(response => {
-            const datesArray = response.body.articles.map(x => x.created_at = parseInt(x.created_at.slice(0, 9).replace(/-/g, '')));
-            console.log(datesArray)
-            for (let i = 0; i < datesArray.length - 1; i++) {
-                expect(typeof datesArray[i]).toBe('number')
-                expect(datesArray[i]).toBeLessThanOrEqual(datesArray[i + 1])
-            }           
+            const articles = response.body.articles;                      
+            expect(articles).toBeSortedBy('created_at', {descending: true, coerce: true});                    
         })
     })
 })
