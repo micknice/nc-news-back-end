@@ -25,5 +25,27 @@ const fetchArticles = () => {
 }
 
 
+const fetchArticleById = (article_id) => {
+    return db.query(
+        `
+        SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, articles.article_img_url
+        FROM articles
+        WHERE articles.article_id = $1
+        `, [article_id]
+    )
+    .then(result => {
+        const article = result.rows;
+        console.log(article)
+        if (article.length === 0) {
+            return Promise.reject({
+                status: 404,
+                msg: 'no article found'
+            });
+        }
+        return article;
+    })
+}
 
-module.exports = { fetchTopics, fetchArticles };
+
+
+module.exports = { fetchTopics, fetchArticles, fetchArticleById };

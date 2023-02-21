@@ -7,7 +7,6 @@ const getTopics = (req, res, next) => {
 
     return fetchTopics()
     .then(result => {
-    console.log(result)
     res.status(200).send({topics: result})
     })
     .catch(next)
