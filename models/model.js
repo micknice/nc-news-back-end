@@ -57,7 +57,6 @@ const fetchCommentsByArticleId = (article_id) => {
     )
     .then(result => {
         const comments = result.rows;
-        console.log('model comments.length', comments.length)
         if (comments.length === 0) {
             return Promise.reject({
                 status: 404,

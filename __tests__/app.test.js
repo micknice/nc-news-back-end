@@ -10,7 +10,7 @@ beforeEach(() => seed(testData));
 
 afterAll(() => db.end());
 
-xdescribe('api', () => {
+describe('api', () => {
     test('get 200 response from server', () => {
         return request(app)
         .get('/api')
@@ -21,7 +21,7 @@ xdescribe('api', () => {
     })
 
 })
-xdescribe('GET /api/topics', () => {
+describe('GET /api/topics', () => {
     test('get  /api/topics request responds with topics object containing an array of topic objects ', () => {
         return request(app)
         .get('/api/topics')
@@ -39,7 +39,7 @@ xdescribe('GET /api/topics', () => {
         })
     })
 })
-xdescribe('GET /api/articles', () => {
+describe('GET /api/articles', () => {
     test('get /api/articles request responds with articles object containing an array of articles objects', () => {
         return request(app)
         .get('/api/articles')
@@ -71,7 +71,7 @@ xdescribe('GET /api/articles', () => {
         })
     })
 })
-xdescribe('get /api/articles/:article_id', ()=> {
+describe('get /api/articles/:article_id', ()=> {
     test('request returns article object with the specified id ', ()=> {
         return request(app)
         .get('/api/articles/1')
@@ -116,7 +116,6 @@ describe('GET /api/articles/:article_id/comments', ()=> {
         .expect(200)
         .then(response => {
             const comments = response.body.comments.map(x => x = parseInt(x.created_at.slice(0, 9).replace(/-/g, '')));
-            console.log(comments)
             for (let i = 0; i < comments.length - 1; i++) {
                 expect(comments[i]).toBeGreaterThanOrEqual(comments[i + 1]);
             }                
