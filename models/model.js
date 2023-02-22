@@ -68,6 +68,13 @@ const fetchCommentsByArticleId = (article_id) => {
 
 }
 
+const insertCommentByArticleId = (article_id, comment) => {
+    return db.query(
+        `
+        `,[article_id, comment]
+    )
+}
 
 
-module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId };
+
+module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, insertCommentByArticleId};
