@@ -3,14 +3,14 @@ const request = require('supertest');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data');
 const seed = require('../db/seeds/seed');
-const jestSort = require('jest-sorted');
+require('jest-sorted');
 
 
 beforeEach(() => seed(testData));
 
 afterAll(() => db.end());
 
-xdescribe('api', () => {
+describe('api', () => {
     test('get 200 response from server', () => {
         return request(app)
         .get('/api')
@@ -21,7 +21,7 @@ xdescribe('api', () => {
     })
 
 })
-xdescribe('GET /api/topics', () => {
+describe('GET /api/topics', () => {
     test('get  /api/topics request responds with topics object containing an array of topic objects ', () => {
         return request(app)
         .get('/api/topics')
@@ -39,7 +39,7 @@ xdescribe('GET /api/topics', () => {
         })
     })
 })
-xdescribe('GET /api/articles', () => {
+describe('GET /api/articles', () => {
     test('get /api/articles request responds with articles object containing an array of articles objects', () => {
         return request(app)
         .get('/api/articles')
@@ -87,8 +87,36 @@ describe('get /api/articles/:article_id', ()=> {
                     votes: expect.any(Number)
             })
             expect(article.article_id).toBe(1)
-
         })
+    })
+})
+describe('GET /api/articles/:article_id/comments', ()=> {
+    test('valid request -server responds with an array of comments objects', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(response => {
+            const comments = response.body.comments
+            expect(Array.isArray(comments)).toBe(true)
+            comments.forEach(comment => {
+                expect(comment).toMatchObject({
+                    comment_id: expect.any(Number),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    author: expect.any(String),
+                    body: expect.any(String),
+                    article_id: expect.any(Number)
+                })
+            })
+        })
+    })
+    test('comments object array is ordered from most recent', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then(response => {
+            expect(response.body.comments).toBeSortedBy('created_at', {descending : true, coerce: false})                          
+        })       
     })
 })
 describe('errors', () => {
@@ -117,6 +145,15 @@ describe('errors', () => {
         .then(response => {
             const body = response.body
             expect(body).toEqual({msg: 'no article matching that id'})
+        })
+    })    
+    test('server returns 404 and a no comments matching that id message when receives valid param with no comments in the db', () => {
+        return request(app)
+        .get('/api/articles/10000/comments')
+        .expect(404)
+        .then(response => {
+            const body = response.body
+            expect(body).toEqual({msg: 'no comments matching that id'})
         })
     })    
 })
