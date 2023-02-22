@@ -3,7 +3,7 @@ const request = require('supertest');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data');
 const seed = require('../db/seeds/seed');
-const jestSort = require('jest-sorted');
+require('jest-sorted');
 
 
 beforeEach(() => seed(testData));
@@ -115,10 +115,7 @@ describe('GET /api/articles/:article_id/comments', ()=> {
         .get('/api/articles/1/comments')
         .expect(200)
         .then(response => {
-            const comments = response.body.comments.map(x => x = parseInt(x.created_at.slice(0, 9).replace(/-/g, '')));
-            for (let i = 0; i < comments.length - 1; i++) {
-                expect(comments[i]).toBeGreaterThanOrEqual(comments[i + 1]);
-            }                
+            expect(response.body.comments).toBeSortedBy('created_at', {descending : true, coerce: false})                          
         })       
     })
 })
