@@ -304,6 +304,17 @@ describe('errors', () => {
             const body = response.body
             expect(body).toEqual({msg: 'bad request'})
         })
+    })
+    test('server reponds with 400 status and request missing required field msg patch req with missing inc_vote property', () => {
+        return request(app)
+        .patch('/api/articles/2')
+        .expect(400)
+        .send({topic: 'mitch'})
+        .then(response => {
+            expect(response.body).toMatchObject({
+                msg: 'request missing required field'
+            })
+        })       
     })    
         
 })
