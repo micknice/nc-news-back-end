@@ -128,6 +128,17 @@ describe('POST /api/articles/:article_id/comments', () => {
         .expect(201)
         .send(newComment)
         .then(response => {
+            expect(response.body).toMatchObject({
+                posted_comment: {
+                    comment_id: expect.any(Number),
+                    body: 'opinions.tm',
+                    article_id: 1,
+                    author: 'lurker',
+                    votes: expect.any(Number),
+                    created_at: expect.any(String)
+                }
+            })
+            console.log(response.body)            
         })
     })
 })
