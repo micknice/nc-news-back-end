@@ -138,7 +138,7 @@ describe('POST /api/articles/:article_id/comments', () => {
                     created_at: expect.any(String)
                 }
             })
-            console.log(response.body)            
+                       
         })
     })
 })
