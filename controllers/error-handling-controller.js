@@ -2,12 +2,15 @@ const app = require('../app');
 
 
 const handleServerErrors = (err, req, res, next) => {
+    console.log(err)
     res.status(500).send({msg: 'Internal Server Error'})
 }
 
 const handlePSQL400Error = (err, req, res, next) => {
-    if (err.code === '22P02') {
+    if (err.code === '22P02' ) {
         res.status(400).send({msg: 'bad request'})
+    } else if( err.code === '23502') {
+        res.status(400).send({msg: 'request missing required field'})
     } else {
         next(err);
     }

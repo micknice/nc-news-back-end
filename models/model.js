@@ -65,16 +65,69 @@ const fetchCommentsByArticleId = (article_id) => {
         }
         return comments;
     })
-
 }
 
-const insertCommentByArticleId = (article_id, comment) => {
+const fetchUserByUsername = (username) => {
     return db.query(
         `
-        `,[article_id, comment]
+        SELECT * FROM users
+        WHERE users.username = $1
+        `, [username]       
     )
+    .then(result => {
+        const user = result.rows[0]
+        
+    })
+}
+
+const insertCommentByArticleId = (article_id, username, body) => {
+    return db.query(
+        `
+        INSERT INTO comments
+        (body, votes, author, article_id, created_at )
+        VALUES
+        ($1, $2, $3, $4, NOW())
+        RETURNING *
+
+        `, [body, 0, username, article_id ]
+    )
+    .then(result => {
+        const comment = result.rows[0];       
+        if (!comment) {
+            return Promise.reject({
+                status: 404,
+                msg: 'no article found'
+            })
+        }
+        return comment;
+    })
+}
+
+const updateVotesByArticleId = (article_id, inc_votes) => {
+
+    return db.query(
+        `
+        UPDATE articles
+        SET votes = votes + $1
+        WHERE article_id = $2
+        RETURNING *
+        `, [inc_votes, article_id]
+    )
+    .then(result => {
+        const article = result.rows[0];
+
+        if(!article) {
+            return Promise.reject({
+                status: 404,
+                msg: 'no article found'
+            })
+        }
+        return article;
+    })
 }
 
 
 
-module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, insertCommentByArticleId};
+
+
+module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId  };
