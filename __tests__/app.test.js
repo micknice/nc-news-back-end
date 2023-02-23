@@ -119,6 +119,18 @@ describe('GET /api/articles/:article_id/comments', ()=> {
         })       
     })
 })
+describe('POST /api/articles/:article_id/comments', () => {
+    test('server responds with 201 status and the posted comment', () => {
+        const newComment = { username: 'lurker',
+        body: 'opinions.tm'}
+        return request(app)
+        .post('/api/articles/1/comments')
+        .expect(201)
+        .send(newComment)
+        .then(response => {
+        })
+    })
+})
 describe('errors', () => {
     test('server returns 404 and not found msg when recieves get request to undefined endpoint', () => {
         return request(app)

@@ -1,5 +1,5 @@
 const app = require('../app');
-const { fetchCommentsByArticleId, insertCommentByArticleId } = require('../models/model');
+const { fetchCommentsByArticleId, insertCommentByArticleId, fetchArticleById } = require('../models/model');
 
 
 const getCommentsByArticleId = (req, res, next) => {
@@ -13,8 +13,12 @@ const getCommentsByArticleId = (req, res, next) => {
 
 const postCommentByArticleId = (req, res, next) => {
     const { article_id } = req.params;
-    const { body } = req.body;
-    return postCommentByArticleId(article_id, body)
+    const { username, body } = req.body;  
+    Promise.all([fetchArticleById(article_id) /* put fetchUserByUsername(username) here */]
+    )
+    .then(() => {       
+    return insertCommentByArticleId(article_id, username, body)       
+    })   
     .then(result => {
     res.status(201).send({posted_comment: result})
     })
