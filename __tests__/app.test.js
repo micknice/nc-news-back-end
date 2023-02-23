@@ -179,4 +179,32 @@ describe('errors', () => {
             expect(body).toEqual({msg: 'no comments matching that id'})
         })
     })    
+    test('server returns 404 and not found msg when recieves post request to undefined endpoint', () => {
+        return request(app)
+        .post('/api/topiary')
+        .expect(404)
+        .then(response => {
+            const body = response.body;
+            expect(body).toEqual({msg: 'not found'})
+        })
+    })
+    test('server returns 400 when recieves post req w/ invalid parametric ', () => {
+        return request(app)
+        .post('/api/articles/badId/comments')
+        .expect(400)
+        .then(response => {
+            const msg = response.body
+            expect(msg).toEqual({msg: 'bad request'})
+        })
+    })
+    test('server returns 404 and a no article matching that id message when receives post req w/ valid but non existent param', () => {
+        return request(app)
+        .post('/api/articles/10000/comments')
+        .expect(404)
+        .then(response => {
+            const body = response.body
+            expect(body).toEqual({msg: 'no article matching that id'})
+        })
+    })    
+        
 })
