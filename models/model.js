@@ -92,8 +92,7 @@ const insertCommentByArticleId = (article_id, username, body) => {
         `, [body, 0, username, article_id ]
     )
     .then(result => {
-        const comment = result.rows[0];
-        
+        const comment = result.rows[0];       
         if (!comment) {
             return Promise.reject({
                 status: 404,
@@ -104,8 +103,30 @@ const insertCommentByArticleId = (article_id, username, body) => {
     })
 }
 
+const updateVotesByArticleId = (article_id, inc_votes) => {
+    return db.query(
+        `
+        UPDATE articles
+        SET votes = votes + $1
+        WHERE article_id = $2
+        RETURNING *
+        `, [inc_votes, article_id]
+    )
+    .then(result => {
+        const article = result.rows[0];
+
+        if(!article) {
+            return Promise.reject({
+                status: 404,
+                msg: 'no article found'
+            })
+        }
+        return article;
+    })
+}
 
 
 
 
-module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, insertCommentByArticleId};
+
+module.exports = { fetchTopics, fetchArticles, fetchArticleById, fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId  };

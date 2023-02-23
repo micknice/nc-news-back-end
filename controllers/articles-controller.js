@@ -1,5 +1,5 @@
 const app = require('../app');
-const { fetchArticles, fetchArticleById } = require('../models/model');
+const { fetchArticles, fetchArticleById, updateVotesByArticleId } = require('../models/model');
 const { handleServerErrors } = require('./error-handling-controller');
 
 const getArticles = (req, res, next) => {
@@ -18,13 +18,17 @@ const getArticleById = (req, res, next) => {
     })
     .catch((err) => {next(err)})
 }
+const patchVotesByArticleId = (req, res, next) => {
+    const { article_id } = req.params;
+    const { inc_votes } = req.body;
+    return updateVotesByArticleId(article_id, inc_votes)
+    .then(result => {
+    res.status(201).send({patched_article: result})
+    })
+    .catch((err) => next(err))
+
+}
 
 
 
-
-
-
-
-
-
-module.exports = { getArticles, getArticleById };
+module.exports = { getArticles, getArticleById, patchVotesByArticleId };
