@@ -183,6 +183,24 @@ describe('PATCH /api/articles/:article_id', () => {
         })       
     })
 })
+describe('GET /api/users', () => {
+    test('server responds with 200 status and an array of user objects', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(response => {
+            const resBodyUsers = response.body.users                 
+            expect(resBodyUsers.length).toBe(4)
+            resBodyUsers.forEach(user => {
+                expect(user).toMatchObject({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)                           
+                })       
+            });
+        })
+    })
+})
 describe('errors', () => {
     test('server returns 404 and not found msg when recieves get request to undefined endpoint', () => {
         return request(app)
