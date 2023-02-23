@@ -104,6 +104,7 @@ const insertCommentByArticleId = (article_id, username, body) => {
 }
 
 const updateVotesByArticleId = (article_id, inc_votes) => {
+
     return db.query(
         `
         UPDATE articles

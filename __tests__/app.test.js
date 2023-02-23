@@ -120,9 +120,9 @@ describe('GET /api/articles/:article_id/comments', ()=> {
     })
 })
 describe('POST /api/articles/:article_id/comments', () => {
-    test('server responds with 201 status and the posted comment', () => {
+    test('server responds with 201 status and the posted comment ignoring unnecessary properties', () => {
         const newComment = { username: 'lurker',
-        body: 'opinions.tm'}
+        body: 'opinions.tm', comment_id: ''}
         return request(app)
         .post('/api/articles/1/comments')
         .expect(201)
@@ -136,11 +136,13 @@ describe('POST /api/articles/:article_id/comments', () => {
                     author: 'lurker',
                     votes: expect.any(Number),
                     created_at: expect.any(String)
+
                 }
             })
                        
         })
     })
+    
 })
 describe('PATCH /api/articles/:article_id', () => {
     test('patch req on entry with existing votes  w/ negative value increments correctly, returns 201 status and patched_article object', () => {
@@ -220,13 +222,32 @@ describe('errors', () => {
             expect(body).toEqual({msg: 'no comments matching that id'})
         })
     })    
-    test('server returns 404 and not found msg when recieves post request to undefined endpoint', () => {
+    test('server responds with 400 status and request missing username field if passed request with missing username property', () => {
+        const newComment = { 
+        body: 'opinions.tm', comment_id: ''}
         return request(app)
-        .post('/api/topiary/1/camutao')
-        .expect(404)
+        .post('/api/articles/1/comments')
+        .expect(400)
+        .send(newComment)
         .then(response => {
-            const body = response.body;
-            expect(body).toEqual({msg: 'not found'})
+            expect(response.body).toMatchObject({
+                msg: 'request missing required field'
+            })
+                       
+        })
+    })
+    test('server responds with 400 status and request missing body field if passed request with missing username property', () => {
+        const newComment = { username: 'lurker',
+         comment_id: ''}
+        return request(app)
+        .post('/api/articles/1/comments')
+        .expect(400)
+        .send(newComment)
+        .then(response => {
+            expect(response.body).toMatchObject({
+                msg: 'request missing required field'
+            })
+                       
         })
     })
     test('server returns 400 when recieves post req w/ invalid parametric ', () => {
