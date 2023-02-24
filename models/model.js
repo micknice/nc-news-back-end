@@ -10,18 +10,51 @@ const fetchTopics = () => {
     .then(result => result.rows)    
 }
 
-const fetchArticles = () => {
-    return db.query(
-        `
-        SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.article_id) AS INT) as comment_count
-        FROM articles
-        LEFT JOIN comments ON articles.article_id = comments.article_id
-        GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
-        ORDER BY articles.created_at DESC;
+const fetchArticles = (topic = '%', sort_by = 'created_at', order = 'desc') => {
+    const searchTerm = '%' + topic + '%';
+    const orderUpper = order.toUpperCase();
 
-        `
-    )
-    .then(result => result.rows)
+    let sortByValidation = false;
+    let orderValidation = false;
+    const validSortByArray = ['article_id', 'title', 'topic', 'author', 'created_at', 'votes'];
+    if (validSortByArray.includes(`${sort_by}`)){
+        sortByValidation = true;
+    }
+    if (order === 'desc' || order === 'asc') {
+        orderValidation = true;
+    }
+    if (sortByValidation === true && orderValidation === true) {
+        return db.query(
+            `
+            SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+            CAST(COUNT(comments.article_id) AS INT) as comment_count
+            FROM articles
+            LEFT JOIN comments ON articles.article_id = comments.article_id
+            WHERE articles.topic LIKE $1
+            GROUP BY articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url
+            ORDER BY articles.${sort_by} ${orderUpper};
+    
+            `, [searchTerm]
+        )
+        .then(result => result.rows)
+    } else if (sortByValidation === false && orderValidation === false){
+        return Promise.reject({
+            status: 400,
+            msg: 'invalid sort_by and order fields'
+        })
+        
+    } else if (sortByValidation === false) {
+        return Promise.reject({
+            status: 400,
+            msg: 'invalid sort_by field'
+        })
+    } else {
+        return Promise.reject({
+            status: 400,
+            msg: 'invalid order field'
+        })
+    }
+    
 }
 
 

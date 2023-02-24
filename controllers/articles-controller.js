@@ -3,7 +3,8 @@ const { fetchArticles, fetchArticleById, updateVotesByArticleId } = require('../
 const { handleServerErrors } = require('./error-handling-controller');
 
 const getArticles = (req, res, next) => {
-    return fetchArticles()
+    const { topic, sort_by, order} = req.query;
+    return fetchArticles(topic, sort_by, order)
     .then(result => {
     res.status(200).send({articles: result})
     })

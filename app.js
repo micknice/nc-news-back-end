@@ -24,6 +24,7 @@ app.get('/api/users', getUsers)
 
 
 
+
 app.use('/*', (req, res)=> {
 res.status(404).send({msg: 'not found'});
 })
