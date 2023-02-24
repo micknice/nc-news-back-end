@@ -1,13 +1,24 @@
 const db = require('../db/connection');
 
-const fetchTopics = () => {
+const fetchTopics = (topic = '%') => {
+    const searchTerm = '%' + topic + '%';
     return db.query(
         `
-        SELECT * FROM topics;
+        SELECT * FROM topics
+        WHERE topics.slug LIKE $1;
         
-        `
+        `,[searchTerm]
     )
-    .then(result => result.rows)    
+    .then(result => {
+        const topics = result.rows
+        if (topics.length === 0) {
+            return Promise.reject({
+                status: 404,
+                msg: 'topic not found'
+            })
+        }
+        return topics;
+    })    
 }
 
 const fetchArticles = (topic = '%', sort_by = 'created_at', order = 'desc') => {

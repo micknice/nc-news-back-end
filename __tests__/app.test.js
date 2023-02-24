@@ -152,6 +152,15 @@ describe('GET /api/articles', () => {
                 })
             })
         })
+        test('valid get req with topic query not in db reponmds with 200 status and empty array', () => {
+            return request(app)
+            .get('/api/articles?topic=paper&sort_by=title')
+            .expect(200)
+            .then(response => {
+                const resBodyArticles = response.body.articles;
+                expect(resBodyArticles).toEqual([])
+            })
+        })
     })
 })
 describe('get /api/articles/:article_id', ()=> {
@@ -440,6 +449,14 @@ describe('errors', () => {
             .expect(400)
             .then(response => {
                 expect(response.body).toMatchObject({msg: 'invalid sort_by and order fields'})               
+            })
+        })
+        test('query topic does not exist in db returns 404 and topic not found msg', () => {
+            return request(app)
+            .get('/api/articles?topic=nobueno')
+            .expect(404)
+            .then(response => {
+                expect(response.body).toMatchObject({msg: 'topic not found'})               
             })
         })
     })   

@@ -1,10 +1,14 @@
 const app = require('../app');
-const { fetchArticles, fetchArticleById, updateVotesByArticleId } = require('../models/model');
+const { fetchArticles, fetchArticleById, updateVotesByArticleId, fetchTopics } = require('../models/model');
 const { handleServerErrors } = require('./error-handling-controller');
 
 const getArticles = (req, res, next) => {
     const { topic, sort_by, order} = req.query;
+    return fetchTopics(topic)
+    .then(() => {
     return fetchArticles(topic, sort_by, order)
+
+    })
     .then(result => {
     res.status(200).send({articles: result})
     })

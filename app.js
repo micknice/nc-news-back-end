@@ -28,8 +28,8 @@ app.get('/api/users', getUsers)
 app.use('/*', (req, res)=> {
 res.status(404).send({msg: 'not found'});
 })
-app.use(handlePSQL400Error);
 app.use(handleCustomErrors);
+app.use(handlePSQL400Error);
 app.use(handleServerErrors);
 
 module.exports = app;

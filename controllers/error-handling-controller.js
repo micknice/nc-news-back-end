@@ -19,6 +19,8 @@ const handlePSQL400Error = (err, req, res, next) => {
 const handleCustomErrors = (err, req, res, next) => {
     if(err.msg === 'no article found' && err.status === 404) {
         res.status(404).send({msg: 'no article matching that id'})
+    } else if (err.msg === 'topic not found' && err.status === 404) {
+        res.status(404).send({msg: 'topic not found'})
     } else if (err.msg === 'no comments found' && err.status === 404) {
         res.status(404).send({msg: 'no comments matching that id'})
     } else if (err.msg === 'invalid sort_by and order fields' && err.status === 400) { 
@@ -27,7 +29,7 @@ const handleCustomErrors = (err, req, res, next) => {
         res.status(400).send({msg: 'invalid sort_by field'})
     } else if (err.msg === 'invalid order field' && err.status === 400) {
         res.status(400).send({msg: 'invalid order field'})
-    } else {
+    }  else {
         next(err);
     }
 }
