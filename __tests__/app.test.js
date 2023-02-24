@@ -70,6 +70,98 @@ describe('GET /api/articles', () => {
             expect(articles).toBeSortedBy('created_at', {descending: true, coerce: false});                    
         })
     })
+    describe('GET /api/articles with queries', () => {
+        test('get req with valid queries responds with array filtered by topic, sorted by the sort query and ordered in the specified order', () => {
+            return request(app)
+            .get('/api/articles?topic=mitch&sort_by=title&order=asc')
+            .expect(200)
+            .then(response => {
+                const resBodyArticles = response.body.articles;
+                expect(resBodyArticles).toBeSortedBy('title', {descending: false, coerce: false})
+                resBodyArticles.forEach(article => {
+                    expect(article.topic).toBe('mitch')
+                    expect(article).toMatchObject({
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number)   
+                    })
+                })
+            })
+        })
+        test('valid get req with topic query omitted defaults to all  and responds with array sorted by the sort query and ordered in the specified order', () => {
+            return request(app)
+            .get('/api/articles?sort_by=title&order=asc')
+            .expect(200)
+            .then(response => {
+                const resBodyArticles = response.body.articles;
+                expect(resBodyArticles).toBeSortedBy('title', {descending: false, coerce: false})
+                resBodyArticles.forEach(article => {                   
+                    expect(article).toMatchObject({
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number)   
+                    })
+                })
+            })
+        })
+        test('valid get req with valid sorted_by field omitted defaults to date  sorted by date and ordered in the specified order', () => {
+            return request(app)
+            .get('/api/articles?order=asc')
+            .expect(200)
+            .then(response => {
+                const resBodyArticles = response.body.articles;
+                expect(resBodyArticles).toBeSortedBy('created_at', {descending: false, coerce: false})
+                resBodyArticles.forEach(article => {
+                    expect(article).toMatchObject({
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number)   
+                    })
+                })
+            })
+        })
+        test('valid get req with order query omitted defaults to desc  and responds with array sorted by the sort query and ordered in descending order', () => {
+            return request(app)
+            .get('/api/articles?sort_by=title')
+            .expect(200)
+            .then(response => {
+                const resBodyArticles = response.body.articles;
+                expect(resBodyArticles).toBeSortedBy('title', {descending: true, coerce: false})
+                resBodyArticles.forEach(article => {                   
+                    expect(article).toMatchObject({
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        comment_count: expect.any(Number)   
+                    })
+                })
+            })
+        })
+        test('valid get req with topic query not in db reponmds with 200 status and empty array', () => {
+            return request(app)
+            .get('/api/articles?topic=paper&sort_by=title')
+            .expect(200)
+            .then(response => {
+                const resBodyArticles = response.body.articles;
+                expect(resBodyArticles).toEqual([])
+            })
+        })
+    })
 })
 describe('get /api/articles/:article_id', ()=> {
     test('request returns article object with the specified id ', ()=> {
@@ -333,6 +425,40 @@ describe('errors', () => {
                 msg: 'request missing required field'
             })
         })       
-    })    
+    })
+    describe('GET /api/articles?queries errors', () => {
+        test('get req with invalid sort_by field responds with 400 status and  invalid sort_by field message', () => {
+            return request(app)
+            .get('/api/articles?topic=mitch&sort_by=invalidinput&order=asc')
+            .expect(400)
+            .then(response => {               
+                expect(response.body).toMatchObject({msg: 'invalid sort_by field'})                
+            })
+        })
+        test('get req with invalid order field responds with 400 status and  invalid order field message', () => {
+            return request(app)
+            .get('/api/articles?topic=mitch&sort_by=title&order=invalidinput')
+            .expect(400)
+            .then(response => {               
+                expect(response.body).toMatchObject({msg: 'invalid order field'})               
+            })
+        })
+        test('get req with invalid sort_by and order fields responds with 400 status and  invalid sort_by and order fields message', () => {
+            return request(app)
+            .get('/api/articles?topic=mitch&sort_by=invalidinput&order=invalidinput')
+            .expect(400)
+            .then(response => {
+                expect(response.body).toMatchObject({msg: 'invalid sort_by and order fields'})               
+            })
+        })
+        test('query topic does not exist in db returns 404 and topic not found msg', () => {
+            return request(app)
+            .get('/api/articles?topic=nobueno')
+            .expect(404)
+            .then(response => {
+                expect(response.body).toMatchObject({msg: 'topic not found'})               
+            })
+        })
+    })   
         
 })
