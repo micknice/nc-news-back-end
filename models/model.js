@@ -11,6 +11,7 @@ const fetchTopics = (topic = '%') => {
     )
     .then(result => {
         const topics = result.rows
+
         if (topics.length === 0) {
             return Promise.reject({
                 status: 404,
@@ -37,7 +38,8 @@ const fetchArticles = (topic = '%', sort_by = 'created_at', order = 'desc') => {
     if (sortByValidation === true && orderValidation === true) {
         return db.query(
             `
-            SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
+            SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, 
+            articles.votes, articles.article_img_url, 
             CAST(COUNT(comments.article_id) AS INT) as comment_count
             FROM articles
             LEFT JOIN comments ON articles.article_id = comments.article_id
@@ -72,9 +74,13 @@ const fetchArticles = (topic = '%', sort_by = 'created_at', order = 'desc') => {
 const fetchArticleById = (article_id) => {
     return db.query(
         `
-        SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic, articles.created_at, articles.votes, articles.article_img_url
+        SELECT articles.author, articles.title, articles.article_id, articles.body, articles.topic,
+        articles.created_at, articles.votes, articles.article_img_url, CAST(COUNT(comments.comment_id)AS INT) AS comment_count
         FROM articles
+        LEFT JOIN comments ON articles.article_id = comments.article_id
         WHERE articles.article_id = $1
+        GROUP BY articles.author, articles.title, articles.article_id, articles.body, articles.topic,
+        articles.created_at, articles.votes, articles.article_img_url
         `, [article_id]
     )
     .then(result => {
