@@ -164,7 +164,7 @@ describe('GET /api/articles', () => {
     })
 })
 describe('get /api/articles/:article_id', ()=> {
-    test('request returns article object with the specified id ', ()=> {
+    test('request returns article object with the specified id, including correct comment count', ()=> {
         return request(app)
         .get('/api/articles/1')
         .expect(200)
@@ -173,14 +173,16 @@ describe('get /api/articles/:article_id', ()=> {
             expect(article).toMatchObject({
                 author: expect.any(String),
                     title: expect.any(String),
-                    article_id: expect.any(Number),
+                    article_id: 1,
                     topic: expect.any(String),
                     created_at: expect.any(String),
-                    votes: expect.any(Number)
+                    votes: expect.any(Number),
+                    comment_count: 11
             })
             expect(article.article_id).toBe(1)
         })
     })
+    
 })
 describe('GET /api/articles/:article_id/comments', ()=> {
     test('valid request -server responds with an array of comments objects', () => {
@@ -377,55 +379,57 @@ describe('errors', () => {
             const body = response.body
             expect(body).toEqual({msg: 'no article matching that id'})
         })
-    })    
-    test('server returns 404 and not found msg when recieves patch request to undefined endpoint', () => {
-        return request(app)
-        .patch('/api/topiary/1')
-        .expect(404)
-        .then(response => {
-            const body = response.body;
-            expect(body).toEqual({msg: 'not found'})
-        })
     })
-    test('server returns 400 when recieves patch req w/ invalid parametric ', () => {
-        return request(app)
-        .patch('/api/articles/badId')
-        .expect(400)
-        .then(response => {
-            const msg = response.body
-            expect(msg).toEqual({msg: 'bad request'})
-        })
-    })
-    test('server returns 404 and a no article matching that id message when receives patch req w/ valid but non existent param', () => {
-        return request(app)
-        .patch('/api/articles/10000')
-        .expect(404)
-        .then(response => {
-            const body = response.body
-            expect(body).toEqual({msg: 'no article matching that id'})
-        })
-    })    
-    test('server returns 400  when receives patch req w/ invalid req.body value', () => {
-        return request(app)
-        .patch('/api/articles/1')
-        .expect(400)
-        .send({inc_votes: 'not a number'})
-        .then(response => {
-            const body = response.body
-            expect(body).toEqual({msg: 'bad request'})
-        })
-    })
-    test('server reponds with 400 status and request missing required field msg patch req with missing inc_vote property', () => {
-        return request(app)
-        .patch('/api/articles/2')
-        .expect(400)
-        .send({topic: 'mitch'})
-        .then(response => {
-            expect(response.body).toMatchObject({
-                msg: 'request missing required field'
+    describe('PATCH /api/articles/:article_id errors', () => {
+        test('server returns 404 and not found msg when recieves patch request to undefined endpoint', () => {
+            return request(app)
+            .patch('/api/topiary/1')
+            .expect(404)
+            .then(response => {
+                const body = response.body;
+                expect(body).toEqual({msg: 'not found'})
             })
+        })
+        test('server returns 400 when recieves patch req w/ invalid parametric ', () => {
+            return request(app)
+            .patch('/api/articles/badId')
+            .expect(400)
+            .then(response => {
+                const msg = response.body
+                expect(msg).toEqual({msg: 'bad request'})
+            })
+        })
+        test('server returns 404 and a no article matching that id message when receives patch req w/ valid but non existent param', () => {
+            return request(app)
+            .patch('/api/articles/10000')
+            .expect(404)
+            .then(response => {
+                const body = response.body
+                expect(body).toEqual({msg: 'no article matching that id'})
+            })
+        })    
+        test('server returns 400  when receives patch req w/ invalid req.body value', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .expect(400)
+            .send({inc_votes: 'not a number'})
+            .then(response => {
+                const body = response.body
+                expect(body).toEqual({msg: 'bad request'})
+            })
+        })
+        test('server reponds with 400 status and request missing required field msg patch req with missing inc_vote property', () => {
+            return request(app)
+            .patch('/api/articles/2')
+            .expect(400)
+            .send({topic: 'mitch'})
+            .then(response => {
+                expect(response.body).toMatchObject({
+                    msg: 'request missing required field'
+                })
+            })       
         })       
-    })
+    })   
     describe('GET /api/articles?queries errors', () => {
         test('get req with invalid sort_by field responds with 400 status and  invalid sort_by field message', () => {
             return request(app)
