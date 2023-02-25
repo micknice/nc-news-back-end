@@ -169,7 +169,7 @@ describe('get /api/articles/:article_id', ()=> {
         .get('/api/articles/1')
         .expect(200)
         .then(response => {
-            const article = response.body.articles
+            const article = response.body.article
             expect(article).toMatchObject({
                 author: expect.any(String),
                     title: expect.any(String),
@@ -298,12 +298,12 @@ describe('GET /api/users', () => {
     })
 })
 describe('DELETE /api/comments/:comment_id', () => {
-    test.only('server responds with a 204 status when receives DELETE req with valid and extant comment id', () => {
+    test('server responds with a 204 status when receives DELETE req with valid and extant comment id', () => {
         return request(app)
         .delete('/api/comments/2')
         .expect(204)
     })
-    test.only('valid DELETE request successfully removes the comment with the specified comment_id from the db', () => {
+    test('valid DELETE request successfully removes the comment with the specified comment_id from the db', () => {
         return request(app)
         .delete('/api/comments/1')
         .expect(204)
@@ -312,9 +312,9 @@ describe('DELETE /api/comments/:comment_id', () => {
             .get('/api/articles/9/')
             .expect(200)
             .then(response => {
-                const articles = response.body.articles
-                expect(articles.comment_count).toBe(1)
-                expect(articles).toMatchObject({
+                const article = response.body.article
+                expect(article.comment_count).toBe(1)
+                expect(article).toMatchObject({
                     author: 'butter_bridge',
                     title: "They're not exactly dogs, are they?",
                     article_id: 9,
@@ -499,7 +499,7 @@ describe('errors', () => {
         })
     })
     describe('DELETE /api/comments/:comment_id  errors', () => {
-        test.only('DELETE req w/ invalid comment_id returns 400 status', () => {
+        test('DELETE req w/ invalid comment_id returns 400 status', () => {
             return request(app)
             .delete('/api/comments/invalid_id')
             .expect(400)
@@ -509,7 +509,7 @@ describe('errors', () => {
         })
     })  
     describe('DELETE /api/comments/:comment_id  errors', () => {
-        test.only('DELETE req w/ valid comment_id which is does not feature in the db returns 404 status', () => {
+        test('DELETE req w/ valid comment_id which is does not feature in the db returns 404 status', () => {
             return request(app)
             .delete('/api/comments/1000')
             .expect(404)

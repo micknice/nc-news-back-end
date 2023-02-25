@@ -23,5 +23,21 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "responds with an article object",
+    "queries": [],
+    "example response": {
+      "article" {
+        "author": "author name",
+        "title": "article title",
+        "article_id": 19,
+        "body": "Text from the article..",
+        "topic": "article topic",
+        "created_at": 1527695953341,
+        "votes": 9,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
   }
 }

@@ -6,7 +6,6 @@ const getCommentsByArticleId = (req, res, next) => {
     const { article_id } = req.params;
     return fetchCommentsByArticleId(article_id)
     .then(result => {
-    console.log('controller output get comments by article id', result)
     res.status(200).send({comments: result})
     })
     .catch((err) => next(err))
