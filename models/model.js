@@ -185,9 +185,50 @@ const fetchUsers = () => {
     .then(result => result.rows)
 }
 
+const removeCommentByCommentId = (comment_id) => {
+    const regex = /^[0-9]+$/;
+    
+    if (regex.test(comment_id)) {
+        return db.query(
+            `
+            SELECT FROM comments
+            WHERE comments.comment_id =$1
+            `, [comment_id]
+        )
+        .then(result => {
+            const comments = result.rows;
+            if (comments.length > 0) {
+                return db.query(
+                    `
+                    DELETE FROM comments
+                    WHERE comments.comment_id = $1
+                    `, [comment_id]
+                )
+                
+            } else {
+                return Promise.reject({
+                    status: 404,
+                    msg: 'no comment found matching that comment_id'
+                })
+            }
+        })
+        
+        
+
+    } else {
+        return Promise.reject({
+            status: 400,
+            msg: 'invalid comment_id'
+        })
+
+    }
+    
+
+}
+
 
 
 
 
 module.exports = { fetchTopics, fetchArticles, fetchArticleById, 
-    fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, fetchUsers  };
+    fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, fetchUsers, removeCommentByCommentId  };

@@ -297,6 +297,40 @@ describe('GET /api/users', () => {
         })
     })
 })
+describe('DELETE /api/comments/:comment_id', () => {
+    test.only('server responds with a 204 status when receives DELETE req with valid and extant comment id', () => {
+        return request(app)
+        .delete('/api/comments/2')
+        .expect(204)
+    })
+    test.only('valid DELETE request successfully removes the comment with the specified comment_id from the db', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+        .then(() => {
+            return request(app)
+            .get('/api/articles/9/')
+            .expect(200)
+            .then(response => {
+                const articles = response.body.articles
+                expect(articles.comment_count).toBe(1)
+                expect(articles).toMatchObject({
+                    author: 'butter_bridge',
+                    title: "They're not exactly dogs, are they?",
+                    article_id: 9,
+                    body: 'Well? Think about it.',
+                    topic: 'mitch',
+                    created_at: '2020-06-06T09:10:00.000Z',
+                    votes: 0,
+                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+                    comment_count: 1
+
+                })
+            })
+            
+        })
+    })
+})
 describe('errors', () => {
     test('server returns 404 and not found msg when recieves get request to undefined endpoint', () => {
         return request(app)
@@ -463,6 +497,26 @@ describe('errors', () => {
                 expect(response.body).toMatchObject({msg: 'topic not found'})               
             })
         })
-    })   
+    })
+    describe('DELETE /api/comments/:comment_id  errors', () => {
+        test.only('DELETE req w/ invalid comment_id returns 400 status', () => {
+            return request(app)
+            .delete('/api/comments/invalid_id')
+            .expect(400)
+            .then(response => {
+                expect(response.body).toMatchObject({msg: 'invalid comment_id'})
+            })
+        })
+    })  
+    describe('DELETE /api/comments/:comment_id  errors', () => {
+        test.only('DELETE req w/ valid comment_id which is does not feature in the db returns 404 status', () => {
+            return request(app)
+            .delete('/api/comments/1000')
+            .expect(404)
+            .then(response => {
+                expect(response.body).toMatchObject({msg: 'no comment matching that comment_id'})
+            })
+        })
+    })  
         
 })
