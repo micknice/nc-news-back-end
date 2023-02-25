@@ -297,6 +297,15 @@ describe('GET /api/users', () => {
         })
     })
 })
+describe('DELETE /api/comments/:comment_id', () => {
+    test('', () => {
+
+
+        
+    })
+
+
+})
 describe('errors', () => {
     test('server returns 404 and not found msg when recieves get request to undefined endpoint', () => {
         return request(app)
