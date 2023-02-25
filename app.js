@@ -5,7 +5,7 @@ const { handleServerErrors, handlePSQL400Error, handleCustomErrors } = require('
 const { getApi } = require('./controllers/api-controller');
 const { getTopics } = require('./controllers/topics-controller');
 const { getArticles, getArticleById, patchVotesByArticleId } = require('./controllers/articles-controller');
-const { getCommentsByArticleId, postCommentByArticleId } = require('./controllers/comments-controller');
+const { getCommentsByArticleId, postCommentByArticleId, deleteCommentByCommentId } = require('./controllers/comments-controller');
 const { getUsers } = require('./controllers/users-controller')
 app.use(express.json())
 
@@ -18,6 +18,7 @@ app.patch('/api/articles/:article_id', patchVotesByArticleId)
 
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 app.post('/api/articles/:article_id/comments', postCommentByArticleId)
+app.delete('/api/comments/:comment_id', deleteCommentByCommentId)
 
 app.get('/api/users', getUsers)
 
