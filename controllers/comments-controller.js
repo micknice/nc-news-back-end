@@ -28,7 +28,6 @@ const postCommentByArticleId = (req, res, next) => {
 
 const deleteCommentByCommentId = (req, res, next) => {
     const { comment_id } = req.params;
-    console.log('controller input', comment_id)
     return removeCommentByCommentId(comment_id)
     .then(() => {
     res.status(204).send()
