@@ -9,6 +9,9 @@ const { getCommentsByArticleId, postCommentByArticleId, deleteCommentByCommentId
 const { getUsers } = require('./controllers/users-controller')
 app.use(express.json())
 
+
+
+
 app.get('/api', getApi);
 
 app.get('/api/topics', getTopics);
@@ -21,7 +24,6 @@ app.post('/api/articles/:article_id/comments', postCommentByArticleId)
 app.delete('/api/comments/:comment_id', deleteCommentByCommentId)
 
 app.get('/api/users', getUsers)
-
 
 
 

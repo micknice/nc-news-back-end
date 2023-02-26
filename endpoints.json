@@ -28,7 +28,52 @@
     "description": "responds with an article object",
     "queries": [],
     "example response": {
-      "article" {
+      "article": {
+        "author": "author name",
+        "title": "article title",
+        "article_id": 19,
+        "body": "Text from the article..",
+        "topic": "article topic",
+        "created_at": 1527695953341,
+        "votes": 9,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "comment_count": 2
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "responds with an an array of comments which match the article_id",
+    "queries": [],
+    "example response": {
+      "comments": [{
+        "comment_id": 1,
+        "votes": 2,
+        "created_at": 1527695953341,
+        "author": "author name",
+        "body": "text from comment",
+        "article_id": 9  
+      }, {
+        "comment_id": 2,
+        "votes": 3,
+        "created_at": 1527695953342,
+        "author": "author name",
+        "body": "text from comment",
+        "article_id": 9  
+      }]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "adds comment to comments db with a corresponding article_id, responds with the posted comment",
+    "queries": [],
+    "example response": {
+      "comment": "comment text"
+    } 
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "responds with the updated article",
+    "queries": [],
+    "example response": {
+      "article": {
         "author": "author name",
         "title": "article title",
         "article_id": 19,
@@ -37,7 +82,42 @@
         "created_at": 1527695953341,
         "votes": 9,
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-      }
+      } 
     }
-  }
+  },
+  "GET /api/users": {
+    "description": "responds with an array of user objects",
+    "queries": [],
+    "example response": {
+      "users": [{
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url":
+          "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      },
+      {
+        "username": "icellusedkars",
+        "name": "sam",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+      },
+      {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      },
+      {
+        "username": "lurker",
+        "name": "do_nothing",
+        "avatar_url":
+          "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      }]
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "removes comment with corresponding comment_id from the comments db ",
+    "queries": [],
+    "example response": {
+      "msg": "no content"
+    }
+  } 
 }

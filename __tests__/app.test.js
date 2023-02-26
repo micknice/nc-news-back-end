@@ -4,6 +4,7 @@ const db = require('../db/connection');
 const testData = require('../db/data/test-data');
 const seed = require('../db/seeds/seed');
 require('jest-sorted');
+const {json} = require('express');
 
 
 beforeEach(() => seed(testData));
@@ -16,7 +17,8 @@ describe('api', () => {
         .get('/api')
         .expect(200)
         .then(response => {
-            expect(response.body.msg).toBe('Success')
+            const endpoints = response.body.endpoints
+            expect(endpoints).toBeInstanceOf(Object)
         })
     })
 

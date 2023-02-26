@@ -1,9 +1,9 @@
 const app = require('../app');
-const { handleServerErrors } = require('./error-handling-controller');
+const endpoints = require('../endpoints.json');
 
-const getApi = (req, res, next) => {
-    res.status(200).send({msg: 'Success'})
 
+const getApi = (req, res, next) => {  
+    res.status(200).send({endpoints: endpoints})
 }
 
 
