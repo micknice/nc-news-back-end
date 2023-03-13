@@ -7,7 +7,10 @@ const { getTopics } = require('./controllers/topics-controller');
 const { getArticles, getArticleById, patchVotesByArticleId } = require('./controllers/articles-controller');
 const { getCommentsByArticleId, postCommentByArticleId, deleteCommentByCommentId } = require('./controllers/comments-controller');
 const { getUsers } = require('./controllers/users-controller')
-app.use(express.json())
+
+const cors = require('cors');
+app.use(cors());
+app.use(express.json());
 
 
 
