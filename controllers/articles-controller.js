@@ -7,7 +7,7 @@ const getArticles = (req, res, next) => {
     return fetchTopics(topic)
     .then(() => {
     return fetchArticles(topic, sort_by, order)
-
+    CONSOLE.LOG('SUCCESS')
     })
     .then(result => {
     res.status(200).send({articles: result})
