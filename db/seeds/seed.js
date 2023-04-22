@@ -5,6 +5,7 @@ const {
   createRef,
   formatComments,
 } = require('./utils');
+const {calculateTFIDF, findMostSimilar} = require('../../utils/tf-idf.js');
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
   return db
@@ -44,7 +45,8 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         body VARCHAR NOT NULL,
         created_at TIMESTAMP DEFAULT NOW(),
         votes INT DEFAULT 0 NOT NULL,
-        article_img_url VARCHAR DEFAULT 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700'
+        article_img_url VARCHAR DEFAULT 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700',
+        similar_article INT DEFAULT 0
       );`);
     })
     .then(() => {
@@ -64,7 +66,6 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         topicData.map(({ slug, description }) => [slug, description])
       );
       const topicsPromise = db.query(insertTopicsQueryStr);
-
       const insertUsersQueryStr = format(
         'INSERT INTO users ( username, name, avatar_url) VALUES %L;',
         userData.map(({ username, name, avatar_url }) => [
@@ -78,9 +79,14 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return Promise.all([topicsPromise, usersPromise]);
     })
     .then(() => {
-      const formattedArticleData = articleData.map(convertTimestampToDate);
+      const formattedData = articleData.map(convertTimestampToDate);
+      const formattedArticleData = [...formattedData.map(article => article = {...article})]
+      for(article of formattedArticleData) {       
+        article.similar_article = findMostSimilar(formattedArticleData, article)
+      }
+
       const insertArticlesQueryStr = format(
-        'INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url) VALUES %L RETURNING *;',
+        'INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url, similar_article) VALUES %L RETURNING *;',
         formattedArticleData.map(
           ({
             title,
@@ -90,7 +96,8 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
             created_at,
             votes = 0,
             article_img_url,
-          }) => [title, topic, author, body, created_at, votes, article_img_url]
+            similar_article,
+          }) => [title, topic, author, body, created_at, votes, article_img_url, similar_article]
         )
       );
 

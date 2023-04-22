@@ -2,6 +2,7 @@ const app = require('../app');
 const request = require('supertest');
 const db = require('../db/connection');
 const testData = require('../db/data/test-data');
+const devData = require('../db/data/development-data');
 const seed = require('../db/seeds/seed');
 require('jest-sorted');
 const {json} = require('express');
@@ -241,12 +242,13 @@ describe('POST /api/articles/:article_id/comments', () => {
     
 })
 describe('PATCH /api/articles/:article_id', () => {
-    test('patch req on entry with existing votes  w/ negative value increments correctly, returns 201 status and patched_article object', () => {
+    test.only('patch req on entry with existing votes  w/ negative value increments correctly, returns 201 status and patched_article object', () => {
         return request(app)
         .patch('/api/articles/1')
         .expect(201)
         .send({inc_votes: -10})
         .then(response => {
+            console.log(response.body)
             expect(response.body).toMatchObject({
                 patched_article: {
                     article_id: 1,
