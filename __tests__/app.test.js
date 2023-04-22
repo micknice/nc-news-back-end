@@ -242,7 +242,7 @@ describe('POST /api/articles/:article_id/comments', () => {
     
 })
 describe('PATCH /api/articles/:article_id', () => {
-    test.only('patch req on entry with existing votes  w/ negative value increments correctly, returns 201 status and patched_article object', () => {
+    test('patch req on entry with existing votes  w/ negative value increments correctly, returns 201 status and patched_article object', () => {
         return request(app)
         .patch('/api/articles/1')
         .expect(201)
