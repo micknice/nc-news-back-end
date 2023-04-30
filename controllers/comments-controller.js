@@ -1,5 +1,5 @@
 const app = require('../app');
-const { fetchCommentsByArticleId, insertCommentByArticleId, fetchArticleById, removeCommentByCommentId } = require('../models/model');
+const {updateVotesByCommentId, fetchCommentsByArticleId, insertCommentByArticleId, fetchArticleById, removeCommentByCommentId } = require('../models/model');
 
 
 const getCommentsByArticleId = (req, res, next) => {
@@ -35,6 +35,14 @@ const deleteCommentByCommentId = (req, res, next) => {
 
 }
 
+const patchCommentByCommentId = (req, res, next) => {
+    const { comment_id } = req.params;
+    const { inc_votes } = req.body
+    return updateVotesByCommentId(comment_id, inc_votes)
+    .then((comment) => {
+        res.status(201).send({patched_comment: comment})
+    })
+}
 
 
 
@@ -42,4 +50,4 @@ const deleteCommentByCommentId = (req, res, next) => {
 
 
 
-module.exports = { getCommentsByArticleId, postCommentByArticleId, deleteCommentByCommentId };
+module.exports = { getCommentsByArticleId, postCommentByArticleId, deleteCommentByCommentId, patchCommentByCommentId };

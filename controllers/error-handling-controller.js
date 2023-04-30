@@ -33,6 +33,10 @@ const handleCustomErrors = (err, req, res, next) => {
         res.status(400).send({msg: 'invalid comment_id'})
     } else if (err.msg === 'no comment found matching that comment_id' && err.status === 404) {
         res.status(404).send({msg: 'no comment matching that comment_id'})
+    } else if (err.msg === 'no user found matching that username' && err.status === 404) {
+        res.status(404).send({msg: 'no user matching that username'})
+    }  else if(err.msg === 'no comment found' && err.status === 404) {
+        res.status(404).send({msg: 'no comment matching that id'})
     } else {
         next(err);
     }

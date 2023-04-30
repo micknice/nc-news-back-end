@@ -1,5 +1,5 @@
 const app = require('../app');
-const { fetchArticles, fetchArticleById, updateVotesByArticleId, fetchTopics } = require('../models/model');
+const { insertNewArticle, fetchArticles, fetchArticleById, updateVotesByArticleId, fetchTopics } = require('../models/model');
 
 
 const getArticles = (req, res, next) => {
@@ -7,7 +7,6 @@ const getArticles = (req, res, next) => {
     return fetchTopics(topic)
     .then(() => {
     return fetchArticles(topic, sort_by, order)
-    CONSOLE.LOG('SUCCESS')
     })
     .then(result => {
     res.status(200).send({articles: result})
@@ -34,6 +33,19 @@ const patchVotesByArticleId = (req, res, next) => {
 
 }
 
+const postArticle = (req, res, next) => {
+    const {author, title, body, topic, article_img_url} = req.body
+
+    return insertNewArticle(author, title, body, topic, article_img_url)
+    .then(result => {
+        const{ article_id, author, votes, created_at } = result
+        const comment_count = 0
+        const article = {article_id: article_id, author: author, votes: votes, created_at: created_at, comment_count: comment_count}
+        res.status(201).send({posted_article: article})
+    })
+    .catch((err) => next(err))
+}
 
 
-module.exports = { getArticles, getArticleById, patchVotesByArticleId };
+
+module.exports = { postArticle, getArticles, getArticleById, patchVotesByArticleId };

@@ -4,8 +4,8 @@ const app = express();
 const { handleServerErrors, handlePSQL400Error, handleCustomErrors } = require('./controllers/error-handling-controller');
 const { getApi } = require('./controllers/api-controller');
 const { getTopics } = require('./controllers/topics-controller');
-const { getArticles, getArticleById, patchVotesByArticleId } = require('./controllers/articles-controller');
-const { getCommentsByArticleId, postCommentByArticleId, deleteCommentByCommentId } = require('./controllers/comments-controller');
+const { postArticle, getArticles, getArticleById, patchVotesByArticleId } = require('./controllers/articles-controller');
+const { getCommentsByArticleId, postCommentByArticleId, deleteCommentByCommentId, patchCommentByCommentId } = require('./controllers/comments-controller');
 const { getUsers } = require('./controllers/users-controller')
 
 const cors = require('cors');
@@ -21,12 +21,16 @@ app.get('/api/topics', getTopics);
 app.get('/api/articles', getArticles);
 app.get('/api/articles/:article_id', getArticleById)
 app.patch('/api/articles/:article_id', patchVotesByArticleId)
+app.post('/api/articles', postArticle)
 
 app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 app.post('/api/articles/:article_id/comments', postCommentByArticleId)
 app.delete('/api/comments/:comment_id', deleteCommentByCommentId)
+app.patch('/api/comments/:comment_id', patchCommentByCommentId)
 
 app.get('/api/users', getUsers)
+app.get('/api/users/:username', getUsers)
+
 
 
 

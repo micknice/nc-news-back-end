@@ -120,6 +120,7 @@ describe('GET /api/articles', () => {
             .get('/api/articles?order=asc')
             .expect(200)
             .then(response => {
+
                 const resBodyArticles = response.body.articles;
                 expect(resBodyArticles).toBeSortedBy('created_at', {descending: false, coerce: false})
                 resBodyArticles.forEach(article => {
@@ -166,7 +167,7 @@ describe('GET /api/articles', () => {
         })
     })
 })
-describe('get /api/articles/:article_id', ()=> {
+describe('GET /api/articles/:article_id', ()=> {
     test('request returns article object with the specified id, including correct comment count', ()=> {
         return request(app)
         .get('/api/articles/1')
@@ -241,6 +242,44 @@ describe('POST /api/articles/:article_id/comments', () => {
     })
     
 })
+describe('PATCH /api/comments/:comment_id', () => {
+    test('patch req on entry with existing votes  w/ negative value increments correctly, returns 201 status and patched_article object', () => {
+        return request(app)
+        .patch('/api/comments/2')
+        .expect(201)
+        .send({inc_votes: -10})
+        .then(response => {
+            
+            expect(response.body).toMatchObject({
+                patched_comment: {
+                    body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+                    votes: 4,
+                    author: "butter_bridge",
+                    article_id: 1,
+                    created_at: expect.any(String)
+                }
+            })
+        })       
+    })
+    test('patch req on entry with existing votes  w/ negative value increments correctly, returns 201 status and patched_article object', () => {
+        return request(app)
+        .patch('/api/comments/3')
+        .expect(201)
+        .send({inc_votes: 10})
+        .then(response => {
+            
+            expect(response.body).toMatchObject({
+                patched_comment: {
+                    body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+                    votes: 110,
+                    author: "icellusedkars",
+                    article_id: 1,
+                    created_at: expect.any(String)
+                }
+            })
+        })       
+    })
+})
 describe('PATCH /api/articles/:article_id', () => {
     test('patch req on entry with existing votes  w/ negative value increments correctly, returns 201 status and patched_article object', () => {
         return request(app)
@@ -248,7 +287,7 @@ describe('PATCH /api/articles/:article_id', () => {
         .expect(201)
         .send({inc_votes: -10})
         .then(response => {
-            console.log(response.body)
+            
             expect(response.body).toMatchObject({
                 patched_article: {
                     article_id: 1,
@@ -284,7 +323,7 @@ describe('PATCH /api/articles/:article_id', () => {
     })
 })
 describe('GET /api/users', () => {
-    test('server responds with 200 status and an array of user objects', () => {
+    test('server responds with 200 status and an array of user objects ', () => {
         return request(app)
         .get('/api/users')
         .expect(200)
@@ -295,9 +334,26 @@ describe('GET /api/users', () => {
                 expect(user).toMatchObject({
                     username: expect.any(String),
                     name: expect.any(String),
-                    avatar_url: expect.any(String)                           
+                    avatar_url: expect.any(String),
+                    password: expect.any(String)                         
                 })       
             });
+        })
+    })
+})
+describe('GET /api/users/:username', () => {
+    test('server responds with 200 status and a user object ', () => {
+        return request(app)
+        .get('/api/users/rogersop')
+        .expect(200)
+        .then(response => {
+            const user = response.body.user                    
+            expect(user).toMatchObject({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String),
+                password: expect.any(String)                        
+            })           
         })
     })
 })
@@ -334,6 +390,34 @@ describe('DELETE /api/comments/:comment_id', () => {
             
         })
     })
+})
+describe('POST /api/articles', () => {
+    test.only('server responds with 201 status and the posted comment ignoring unnecessary properties', () => {
+        const newArticle = {
+            author: "rogersop", 
+            title: "how to pass a test", 
+            body: "make the test fail first", 
+            topic: "mitch", 
+            article_img_url: "https://images.pexels.com/photos/14174469/pexels-photo-14174469.jpeg?auto=compress&cs=tinysrgb&w=700&h=700&dpr=1"
+                
+        }
+        return request(app)
+        .post('/api/articles')
+        .expect(201)
+        .send(newArticle)
+        .then(response => {
+            expect(response.body).toMatchObject({
+                posted_article: {
+                    article_id: expect.any(Number),
+                    author: 'rogersop',
+                    votes: expect.any(Number),
+                    created_at: expect.any(String),
+                    comment_count: expect.any(Number)
+                }
+            })                      
+        })
+    })
+    
 })
 describe('errors', () => {
     test('server returns 404 and not found msg when recieves get request to undefined endpoint', () => {
@@ -521,6 +605,18 @@ describe('errors', () => {
                 expect(response.body).toMatchObject({msg: 'no comment matching that comment_id'})
             })
         })
+    })
+    describe('GET /api/users/:username  errors' , () => {
+        test('server responds with 404 status and no user with that username msg when username not in db', () => {
+            return request(app)
+            .get('/api/users/invalidusername')
+            .expect(404)
+            .then(response => {   
+                            
+                expect(response.body).toMatchObject({msg: 'no user matching that username'})           
+            })
+        })
+        
     })  
         
 })

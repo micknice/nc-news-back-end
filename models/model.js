@@ -1,5 +1,7 @@
 const db = require('../db/connection');
 
+const defaultImgUrl = "https://images.pexels.com/photos/14174469/pexels-photo-14174469.jpeg?auto=compress&cs=tinysrgb&w=700&h=700&dpr=1"
+
 const fetchTopics = (topic = '%') => {
     const searchTerm = '%' + topic + '%';
     return db.query(
@@ -119,6 +121,12 @@ const fetchCommentsByArticleId = (article_id) => {
 }
 
 const fetchUserByUsername = (username) => {
+    if (typeof username !== 'string' || username === '') {
+        return Promise.reject({
+            status: 400,
+            msg: 'invalid username field'
+        })
+    }
     return db.query(
         `
         SELECT * FROM users
@@ -127,6 +135,16 @@ const fetchUserByUsername = (username) => {
     )
     .then(result => {
         const user = result.rows[0]
+
+        if (!user) {
+            
+            
+            return Promise.reject({
+                status: 404,
+                msg: 'no user found matching that username'
+            })
+        }
+        return user;
         
     })
 }
@@ -154,6 +172,7 @@ const insertCommentByArticleId = (article_id, username, body) => {
     })
 }
 
+
 const updateVotesByArticleId = (article_id, inc_votes) => {
 
     return db.query(
@@ -176,14 +195,40 @@ const updateVotesByArticleId = (article_id, inc_votes) => {
         return article;
     })
 }
+const updateVotesByCommentId = (comment_id, inc_votes) => {
+
+    return db.query(
+        `
+        UPDATE comments
+        SET votes = votes + $1
+        WHERE comment_id = $2
+        RETURNING *
+        `, [inc_votes, comment_id]
+    )
+    .then(result => {
+        const comment = result.rows[0];
+
+        if(!comment) {
+            return Promise.reject({
+                status: 404,
+                msg: 'no comment found'
+            })
+        }
+        return comment;
+    })
+}
 
 const fetchUsers = () => {
+    
     return db.query(
         `
         SELECT * FROM users
         `
     )
-    .then(result => result.rows)
+    .then(result => {
+        const users = result.rows        
+        return users
+    })
 }
 
 const removeCommentByCommentId = (comment_id) => {
@@ -227,9 +272,33 @@ const removeCommentByCommentId = (comment_id) => {
 
 }
 
+const insertNewArticle = (author, title, body, topic, article_img_url=defaultImgUrl) => {
+    return db.query(
+        `
+        INSERT INTO articles
+        (author, title, body, topic, article_img_url)
+        VALUES
+        ($1, $2, $3, $4, $5)
+        RETURNING *
+
+        `, [author, title, body, topic, article_img_url]
+    )
+    .then(result => {
+        const article = result.rows[0];       
+        if (!article) {
+            return Promise.reject({
+                status: 404,
+                msg: 'no article found'
+            })
+        }
+        return article;
+    })
+
+}
 
 
 
 
-module.exports = { fetchTopics, fetchArticles, fetchArticleById, 
-    fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, fetchUsers, removeCommentByCommentId  };
+
+module.exports = { insertNewArticle, updateVotesByCommentId, fetchTopics, fetchArticles, fetchArticleById, 
+    fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, fetchUsers, removeCommentByCommentId, fetchUserByUsername  };
