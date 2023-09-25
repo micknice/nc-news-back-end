@@ -22,7 +22,8 @@ const getUsers = (req, res, next) => {
     }
 }
 
-const postNewUser = (req, res, next) => {   
+const postNewUser = (req, res, next) => {  
+    console.log(req.body, 'req.body @ postNewUser') 
 
    const { name, email, image } = req.body 
    if(!name || !email || !image) {
