@@ -43,7 +43,7 @@ describe('GET /api/topics', () => {
     })
 })
 describe('GET /api/articles', () => {
-    test('get /api/articles request responds with articles object containing an array of articles objects', () => {
+    test.only('get /api/articles request responds with articles object containing an array of articles objects', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
@@ -73,7 +73,7 @@ describe('GET /api/articles', () => {
         })
     })
     describe('GET /api/articles with queries', () => {
-        test.only('get req with valid queries responds with array filtered by topic, sorted by the sort query and ordered in the specified order', () => {
+        test('get req with valid queries responds with array filtered by topic, sorted by the sort query and ordered in the specified order', () => {
             return request(app)
             .get('/api/articles?topic=coding&sort_by=title&order=asc')
             .expect(200)

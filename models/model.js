@@ -26,6 +26,7 @@ const fetchTopics = (topic = '%') => {
 }
 
 const fetchArticles = (topic = '%', sort_by = 'created_at', order = 'desc') => {
+    console.log(topic, sort_by, order, '!!!')
     const searchTerm = '%' + topic + '%';
     const orderUpper = order.toUpperCase();
     let sortByValidation = false;
@@ -44,7 +45,7 @@ const fetchArticles = (topic = '%', sort_by = 'created_at', order = 'desc') => {
         return db.query(
             `
             SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, 
-            articles.votes, articles.article_img_url, articles.similar_article, articles.last_updated_tfidf,
+            articles.votes, articles.article_img_url, articles.similar_article,
             CAST(COUNT(comments.article_id) AS INT) as comment_count
             FROM articles
             LEFT JOIN comments ON articles.article_id = comments.article_id

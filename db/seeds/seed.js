@@ -48,8 +48,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         created_at TIMESTAMP DEFAULT NOW(),
         votes INT DEFAULT 0 NOT NULL,
         article_img_url VARCHAR DEFAULT 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700',
-        similar_article INT DEFAULT 0,
-        last_updated_tfidf TIMESTAMP DEFAULT NOW()
+        similar_article INT DEFAULT 0
       );`);
     })
     .then(() => {
