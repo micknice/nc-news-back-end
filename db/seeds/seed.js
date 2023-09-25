@@ -5,7 +5,8 @@ const {
   createRef,
   formatComments,
 } = require('./utils');
-const {calculateTFIDF, findMostSimilar} = require('../../utils/tf-idf.js');
+const Corpus = require('../../utils/Corpus');
+const articles = require('../data/test-data/articles');
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
   return db
@@ -47,7 +48,8 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
         created_at TIMESTAMP DEFAULT NOW(),
         votes INT DEFAULT 0 NOT NULL,
         article_img_url VARCHAR DEFAULT 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700',
-        similar_article INT DEFAULT 0
+        similar_article INT DEFAULT 0,
+        last_updated_tfidf TIMESTAMP DEFAULT NOW()
       );`);
     })
     .then(() => {
@@ -83,8 +85,12 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     .then(() => {
       const formattedData = articleData.map(convertTimestampToDate);
       const formattedArticleData = [...formattedData.map(article => article = {...article})]
-      for(article of formattedArticleData) {       
-        article.similar_article = findMostSimilar(formattedArticleData, article)
+      const bodyArr = [...formattedData.map(article => article = article.body)]
+      const idArr = [...formattedData.map((article, i) => article = i+1)]
+      const corpus = new Corpus(idArr, bodyArr)
+      
+      for(article of formattedArticleData) {   
+        article.similar_article = corpus.getResultsForQuery(article.body)[1][0]                
       }
 
       const insertArticlesQueryStr = format(
@@ -102,6 +108,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
           }) => [title, topic, author, body, created_at, votes, article_img_url, similar_article]
         )
       );
+      
 
       return db.query(insertArticlesQueryStr);
     })

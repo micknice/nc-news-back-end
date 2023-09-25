@@ -1,4 +1,4 @@
-const stopWords ={
+const stopObj = {
     
     'able': true,
     'about': true,
@@ -503,4 +503,4 @@ const stopWords ={
 
 }
 
-module.exports = stopWords;
+module.exports = stopObj;

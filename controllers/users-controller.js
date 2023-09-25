@@ -1,6 +1,6 @@
 const app = require('../app');
 
-const { fetchUsers, fetchUserByUsername } = require('../models/model');
+const { fetchUsers, fetchUserByUsername, insertNewUser } = require('../models/model');
 
 
 const getUsers = (req, res, next) => {
@@ -22,18 +22,30 @@ const getUsers = (req, res, next) => {
     }
 }
 
-// const getUserByUserName = (req, res, next) => {
-//     console.log('controller invoked')
-//     const { username } = req.body;
+const postNewUser = (req, res, next) => {   
+
+   const { name, email, image } = req.body 
+   if(!name || !email || !image) {
+       return next({
+           status: 400,
+           msg: 'invalid user details'
+       })
+   } else {
+       insertNewUser(name, email, image)
+       .then(result => {
+           const user = result
+           res.status(201).send({user: user})
+       }).catch((err) => next(err))
+   }
     
-//     return fetchUserByUsername(username)
-//     .then(result => {
-//     // res.status(200).send({user: result})
-//     res.status(200).send({user: result})
-//     })
-//     .catch((err) => next(err))
-    
-// }
 
 
-module.exports = {getUsers}
+}
+
+
+
+
+
+
+
+module.exports = {getUsers, postNewUser}

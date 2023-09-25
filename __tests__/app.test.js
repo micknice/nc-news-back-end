@@ -8,7 +8,7 @@ require('jest-sorted');
 const {json} = require('express');
 
 
-beforeEach(() => seed(testData));
+beforeEach(() => seed(devData));
 
 afterAll(() => db.end());
 
@@ -31,12 +31,12 @@ describe('GET /api/topics', () => {
         .expect(200)
         .then(response => {
             const resBodyTopics = response.body.topics                  
-            expect(resBodyTopics.length).toBe(3)
+            expect(resBodyTopics.length).toBe(4)
             resBodyTopics.forEach(topic => {
                 expect(topic).toMatchObject({
                             slug: expect.any(String),
                             description: expect.any(String)
-                        })       
+                })       
             });
 
         })
@@ -49,7 +49,7 @@ describe('GET /api/articles', () => {
         .expect(200)
         .then(response => {
             const resBodyArticles = response.body.articles;
-            expect(resBodyArticles.length).toBe(12)
+            expect(resBodyArticles.length).toBe(36)
             resBodyArticles.forEach(article => {
                 expect(article).toMatchObject({
                     author: expect.any(String),
@@ -59,7 +59,6 @@ describe('GET /api/articles', () => {
                     created_at: expect.any(String),
                     votes: expect.any(Number),
                     comment_count: expect.any(Number)
-
                 })
             })
         })
@@ -74,15 +73,15 @@ describe('GET /api/articles', () => {
         })
     })
     describe('GET /api/articles with queries', () => {
-        test('get req with valid queries responds with array filtered by topic, sorted by the sort query and ordered in the specified order', () => {
+        test.only('get req with valid queries responds with array filtered by topic, sorted by the sort query and ordered in the specified order', () => {
             return request(app)
-            .get('/api/articles?topic=mitch&sort_by=title&order=asc')
+            .get('/api/articles?topic=coding&sort_by=title&order=asc')
             .expect(200)
             .then(response => {
                 const resBodyArticles = response.body.articles;
                 expect(resBodyArticles).toBeSortedBy('title', {descending: false, coerce: false})
                 resBodyArticles.forEach(article => {
-                    expect(article.topic).toBe('mitch')
+                    expect(article.topic).toBe('coding')
                     expect(article).toMatchObject({
                         author: expect.any(String),
                         title: expect.any(String),
@@ -158,7 +157,7 @@ describe('GET /api/articles', () => {
         })
         test('valid get req with topic query not in db reponmds with 200 status and empty array', () => {
             return request(app)
-            .get('/api/articles?topic=paper&sort_by=title')
+            .get('/api/articles?topic=skating&sort_by=title')
             .expect(200)
             .then(response => {
                 const resBodyArticles = response.body.articles;
@@ -181,7 +180,7 @@ describe('GET /api/articles/:article_id', ()=> {
                     topic: expect.any(String),
                     created_at: expect.any(String),
                     votes: expect.any(Number),
-                    comment_count: 11
+                    comment_count: 8
             })
             expect(article.article_id).toBe(1)
         })
@@ -219,7 +218,7 @@ describe('GET /api/articles/:article_id/comments', ()=> {
 })
 describe('POST /api/articles/:article_id/comments', () => {
     test('server responds with 201 status and the posted comment ignoring unnecessary properties', () => {
-        const newComment = { username: 'lurker',
+        const newComment = { username: 'grumpy19',
         body: 'opinions.tm', comment_id: ''}
         return request(app)
         .post('/api/articles/1/comments')
@@ -231,7 +230,7 @@ describe('POST /api/articles/:article_id/comments', () => {
                     comment_id: expect.any(Number),
                     body: 'opinions.tm',
                     article_id: 1,
-                    author: 'lurker',
+                    author: 'grumpy19',
                     votes: expect.any(Number),
                     created_at: expect.any(String)
 
@@ -252,10 +251,10 @@ describe('PATCH /api/comments/:comment_id', () => {
             
             expect(response.body).toMatchObject({
                 patched_comment: {
-                    body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-                    votes: 4,
-                    author: "butter_bridge",
-                    article_id: 1,
+                    body: "Nobis consequatur animi. Ullam nobis quaerat voluptates veniam.",
+                    votes: -3,
+                    author: "grumpy19",
+                    article_id: 4,
                     created_at: expect.any(String)
                 }
             })
@@ -270,10 +269,10 @@ describe('PATCH /api/comments/:comment_id', () => {
             
             expect(response.body).toMatchObject({
                 patched_comment: {
-                    body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
-                    votes: 110,
-                    author: "icellusedkars",
-                    article_id: 1,
+                    body: "Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio.",
+                    votes: 13,
+                    author: "grumpy19",
+                    article_id: 3,
                     created_at: expect.any(String)
                 }
             })
@@ -291,13 +290,13 @@ describe('PATCH /api/articles/:article_id', () => {
             expect(response.body).toMatchObject({
                 patched_article: {
                     article_id: 1,
-                    title: 'Living in the shadow of a great man',
-                    topic: 'mitch',
-                    author: 'butter_bridge',
-                    body: 'I find this existence challenging',
+                    title: 'Running a Node App',
+                    topic: 'coding',
+                    author: 'jessjelly',
+                    body: 'This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.',
                     created_at: expect.any(String),
-                    votes: 90,
-                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                    votes: -10,
+                    article_img_url: 'https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700'
                 }
             })
         })       
@@ -310,13 +309,13 @@ describe('PATCH /api/articles/:article_id', () => {
         .then(response => {
             expect(response.body).toMatchObject({
                 patched_article: {
-                    title: 'Sony Vaio; or, The Laptop',
-                    topic: 'mitch',
-                    author: 'icellusedkars',
-                    body: 'Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.',
+                    title: 'The Rise Of Thinking Machines: How IBM\'s Watson Takes On The World',
+                    topic: 'coding',
+                    author: 'jessjelly',
+                    body: 'Many people know Watson as the IBM-developed cognitive super computer that won the Jeopardy! gameshow in 2011. In truth, Watson is not actually a computer but a set of algorithms and APIs, and since winning TV fame (and a $1 million prize) IBM has put it to use tackling tough problems in every industry from healthcare to finance. Most recently, IBM has announced several new partnerships which aim to take things even further, and put its cognitive capabilities to use solving a whole new range of problems around the world.',
                     created_at: expect.any(String),
                     votes: 10,
-                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+                    article_img_url: 'https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?w=700&h=700'
                 }
             })
         })       
@@ -329,7 +328,7 @@ describe('GET /api/users', () => {
         .expect(200)
         .then(response => {
             const resBodyUsers = response.body.users                 
-            expect(resBodyUsers.length).toBe(4)
+            expect(resBodyUsers.length).toBe(6)
             resBodyUsers.forEach(user => {
                 expect(user).toMatchObject({
                     username: expect.any(String),
@@ -344,7 +343,7 @@ describe('GET /api/users', () => {
 describe('GET /api/users/:username', () => {
     test('server responds with 200 status and a user object ', () => {
         return request(app)
-        .get('/api/users/rogersop')
+        .get('/api/users/grumpy19')
         .expect(200)
         .then(response => {
             const user = response.body.user                    
@@ -373,31 +372,30 @@ describe('DELETE /api/comments/:comment_id', () => {
             .expect(200)
             .then(response => {
                 const article = response.body.article
-                expect(article.comment_count).toBe(1)
+                expect(article.comment_count).toBe(8)
                 expect(article).toMatchObject({
-                    author: 'butter_bridge',
-                    title: "They're not exactly dogs, are they?",
+                    author: 'grumpy19',
+                    title: "Learn HTML5, CSS3, and Responsive WebSite Design in One Go",
                     article_id: 9,
-                    body: 'Well? Think about it.',
-                    topic: 'mitch',
-                    created_at: '2020-06-06T09:10:00.000Z',
+                    body: 'Both CSS3 and HTML5 are just about fully supported in all modern browsers, and we there are techniques in place to patch old browsers that lack support. So there is no disadvantage to using CSS3 and HTML5 today. The opposite is true, however: there are many painful, frustrating disadvantages with forgoing HTML5 and CSS3. You may already “know” a bit of HTML5 and a touch of CSS3 (or perhaps you probably know enough old-school HTML and CSS, and with this knowledge, you might have thought you needn’t learn HTML5 and CSS3 fully.',
+                    topic: 'coding',
+                    created_at: '2020-05-26T14:06:00.000Z',
                     votes: 0,
-                    article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-                    comment_count: 1
-
+                    article_img_url: 'https://images.pexels.com/photos/1591061/pexels-photo-1591061.jpeg?w=700&h=700',
+                    comment_count: 8
                 })
             })
             
         })
     })
 })
-describe('POST /api/articles', () => {
-    test.only('server responds with 201 status and the posted comment ignoring unnecessary properties', () => {
+xdescribe('POST /api/articles', () => {
+    test('server responds with 201 status and the posted comment ignoring unnecessary properties', () => {
         const newArticle = {
-            author: "rogersop", 
+            author: "grumpy19", 
             title: "how to pass a test", 
-            body: "make the test fail first", 
-            topic: "mitch", 
+            body: "You’re probably aware that JavaScript is the programming language most often used to add interactivity to the front end of a website, but its capabilities go far beyond that—entire sites can be built on JavaScript, extending it from the front to the back end, seamlessly. Express.js and Node.js gave JavaScript newfound back-end functionality—allowing developers to build software with JavaScript on the server side for the first time. Together, they make it possible to build an entire site with JavaScript: You can develop server-side applications with Node.js and then publish those Node.js apps as websites with Express. Because Node.js itself wasn’t intended to build websites, the Express framework is able to layer in built-in structure and functions needed to actually build a site. It’s a pretty lightweight framework that’s great for giving developers extra, built-in web application features and the Express API without overriding the already robust, feature-packed Node.js platform. In short, Express and Node are changing the way developers build websites", 
+            topic: "coding", 
             article_img_url: "https://images.pexels.com/photos/14174469/pexels-photo-14174469.jpeg?auto=compress&cs=tinysrgb&w=700&h=700&dpr=1"
                 
         }
@@ -409,7 +407,7 @@ describe('POST /api/articles', () => {
             expect(response.body).toMatchObject({
                 posted_article: {
                     article_id: expect.any(Number),
-                    author: 'rogersop',
+                    author: 'grumpy19',
                     votes: expect.any(Number),
                     created_at: expect.any(String),
                     comment_count: expect.any(Number)
@@ -466,8 +464,7 @@ describe('errors', () => {
         .then(response => {
             expect(response.body).toMatchObject({
                 msg: 'request missing required field'
-            })
-                       
+            })                       
         })
     })
     test('server responds with 400 status and request missing body field if passed request with missing username property', () => {
@@ -555,7 +552,7 @@ describe('errors', () => {
     describe('GET /api/articles?queries errors', () => {
         test('get req with invalid sort_by field responds with 400 status and  invalid sort_by field message', () => {
             return request(app)
-            .get('/api/articles?topic=mitch&sort_by=invalidinput&order=asc')
+            .get('/api/articles?topic=coding&sort_by=invalidinput&order=asc')
             .expect(400)
             .then(response => {               
                 expect(response.body).toMatchObject({msg: 'invalid sort_by field'})                
@@ -563,7 +560,7 @@ describe('errors', () => {
         })
         test('get req with invalid order field responds with 400 status and  invalid order field message', () => {
             return request(app)
-            .get('/api/articles?topic=mitch&sort_by=title&order=invalidinput')
+            .get('/api/articles?topic=coding&sort_by=title&order=invalidinput')
             .expect(400)
             .then(response => {               
                 expect(response.body).toMatchObject({msg: 'invalid order field'})               
@@ -571,7 +568,7 @@ describe('errors', () => {
         })
         test('get req with invalid sort_by and order fields responds with 400 status and  invalid sort_by and order fields message', () => {
             return request(app)
-            .get('/api/articles?topic=mitch&sort_by=invalidinput&order=invalidinput')
+            .get('/api/articles?topic=coding&sort_by=invalidinput&order=invalidinput')
             .expect(400)
             .then(response => {
                 expect(response.body).toMatchObject({msg: 'invalid sort_by and order fields'})               

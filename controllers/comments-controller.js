@@ -14,7 +14,7 @@ const getCommentsByArticleId = (req, res, next) => {
 const postCommentByArticleId = (req, res, next) => {
     const { article_id } = req.params;
     const { username, body } = req.body;  
-    Promise.all([fetchArticleById(article_id) /* put fetchUserByUsername(username) here */]
+    Promise.all([fetchArticleById(article_id)]
     )
     .then(() => {       
     return insertCommentByArticleId(article_id, username, body)       

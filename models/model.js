@@ -1,4 +1,5 @@
 const db = require('../db/connection');
+const format = require('pg-format')
 
 const defaultImgUrl = "https://images.pexels.com/photos/14174469/pexels-photo-14174469.jpeg?auto=compress&cs=tinysrgb&w=700&h=700&dpr=1"
 
@@ -27,21 +28,23 @@ const fetchTopics = (topic = '%') => {
 const fetchArticles = (topic = '%', sort_by = 'created_at', order = 'desc') => {
     const searchTerm = '%' + topic + '%';
     const orderUpper = order.toUpperCase();
-
     let sortByValidation = false;
     let orderValidation = false;
     const validSortByArray = ['article_id', 'title', 'topic', 'author', 'created_at', 'votes'];
     if (validSortByArray.includes(`${sort_by}`)){
         sortByValidation = true;
+        console.log('1st val')
     }
     if (order === 'desc' || order === 'asc') {
         orderValidation = true;
+        console.log('2nd val')
     }
     if (sortByValidation === true && orderValidation === true) {
+        console.log('prequery')
         return db.query(
             `
             SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, 
-            articles.votes, articles.article_img_url, articles.similar_article,
+            articles.votes, articles.article_img_url, articles.similar_article, articles.last_updated_tfidf,
             CAST(COUNT(comments.article_id) AS INT) as comment_count
             FROM articles
             LEFT JOIN comments ON articles.article_id = comments.article_id
@@ -69,6 +72,18 @@ const fetchArticles = (topic = '%', sort_by = 'created_at', order = 'desc') => {
             msg: 'invalid order field'
         })
     }
+    
+}
+const fetchArticlesForTfIdf = () => {
+           
+        return db.query(
+            `
+            SELECT articles.article_id, articles.body, articles.last_updated_tfidf             
+            FROM articles   
+            `
+        )
+        .then(result => result.rows)
+    
     
 }
 
@@ -149,6 +164,29 @@ const fetchUserByUsername = (username) => {
     })
 }
 
+const insertNewUser = (username, email, avatar_url) => {
+    return db.query(
+        `
+        INSERT INTO users
+        (username, name, avatar_url, password)
+        VALUES
+        ($1, $1, $2, $3)
+        RETURNING *
+
+        `, [username, avatar_url, email ]
+    )
+    .then(result => {
+        const user = result.rows[0];       
+        if (!user) {
+            return Promise.reject({
+                status: 404,
+                msg: 'no article found'
+            })
+        }
+        return user;
+    })
+}
+
 const insertCommentByArticleId = (article_id, username, body) => {
     return db.query(
         `
@@ -196,6 +234,7 @@ const updateVotesByArticleId = (article_id, inc_votes) => {
     })
 }
 const updateVotesByCommentId = (comment_id, inc_votes) => {
+    
 
     return db.query(
         `
@@ -300,5 +339,8 @@ const insertNewArticle = (author, title, body, topic, article_img_url=defaultImg
 
 
 
-module.exports = { insertNewArticle, updateVotesByCommentId, fetchTopics, fetchArticles, fetchArticleById, 
-    fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, fetchUsers, removeCommentByCommentId, fetchUserByUsername  };
+
+
+module.exports = { fetchArticlesForTfIdf ,insertNewArticle, updateVotesByCommentId, fetchTopics, fetchArticles, fetchArticleById, 
+    fetchCommentsByArticleId, insertCommentByArticleId, updateVotesByArticleId, fetchUsers, removeCommentByCommentId, fetchUserByUsername, 
+    insertNewUser  };

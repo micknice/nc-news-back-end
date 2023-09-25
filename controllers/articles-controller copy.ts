@@ -1,10 +1,13 @@
+import { NextFunction } from "express";
+
 const app = require('../app');
 const format = require('pg-format')
 const { fetchArticlesForTfIdf,  insertNewArticle, fetchArticles, fetchArticleById, updateVotesByArticleId, fetchTopics } = require('../models/model');
 const Corpus = require('../utils/Corpus');
 
 
-const getArticles = (req, res, next) => {
+
+const getArticles = (req: Request, res: Response, next: NextFunction) => {
     const { topic, sort_by, order} = req.query;
        
     return fetchTopics(topic)
