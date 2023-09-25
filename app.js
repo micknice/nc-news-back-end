@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const multer  = require('multer')
-const upload = multer({ dest: 'uploads/' })
+const upload = multer()
 
 const { handleServerErrors, handlePSQL400Error, handleCustomErrors } = require('./controllers/error-handling-controller');
 const { getApi } = require('./controllers/api-controller');
