@@ -29,7 +29,7 @@ const postNewUser = (req, res, next) => {
    if(!name || !email || !image) {
        return next({
            status: 400,
-           msg: 'invalid user details'
+           msg: `invalid user details, req.body ${req.body}}`
        })
    } else {
        insertNewUser(name, email, image)
