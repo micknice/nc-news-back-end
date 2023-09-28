@@ -20,7 +20,7 @@ const postCommentByArticleId = (req, res, next) => {
     .then(() => {
         return getProfanityCheck(body)
         .then((result) => {
-            if(result === true) {
+            if(result.containsProfanity === true) {
                 return Promise.reject({status: 400, msg: 'profanity detected'})
             } else {
                 return insertCommentByArticleId(article_id, username, body)       
