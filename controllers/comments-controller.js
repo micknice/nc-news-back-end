@@ -28,7 +28,7 @@ const postCommentByArticleId = (req, res, next) => {
             {
                 return insertCommentByArticleId(article_id, username, body)       
                 .then(result => {
-                res.status(201).send({posted_comment: result, profanity: profanity})
+                res.status(201).send({posted_comment: result, profanity: profanity.containsProfanity})
                 })
                 .catch((err) => next(err))
             }
