@@ -37,6 +37,8 @@ const handleCustomErrors = (err, req, res, next) => {
         res.status(404).send({msg: 'no user matching that username'})
     }  else if(err.msg === 'no comment found' && err.status === 404) {
         res.status(404).send({msg: 'no comment matching that id'})
+    }  else if(err.msg === 'no comment found' && err.status === 404) {
+        res.status(400).send({msg: 'profanity detected'})
     } else {
         next(err);
     }

@@ -26,7 +26,7 @@ const postNewUser = (req, res, next) => {
     console.log(req.body, 'req.body @ postNewUser') 
 
    const { name, email, image } = req.body 
-   if(!name || !email || !image) {
+   if(!req.body || !email || !image) {
        return next({
            status: 400,
            msg: `invalid user details, req.body ${req.body}}`

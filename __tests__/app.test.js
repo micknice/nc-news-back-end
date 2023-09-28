@@ -25,7 +25,7 @@ describe('api', () => {
 
 })
 describe('GET /api/topics', () => {
-    test('get  /api/topics request responds with topics object containing an array of topic objects ', () => {
+    test.only('get  /api/topics request responds with topics object containing an array of topic objects ', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
@@ -43,7 +43,7 @@ describe('GET /api/topics', () => {
     })
 })
 describe('GET /api/articles', () => {
-    test.only('get /api/articles request responds with articles object containing an array of articles objects', () => {
+    test('get /api/articles request responds with articles object containing an array of articles objects', () => {
         return request(app)
         .get('/api/articles')
         .expect(200)
