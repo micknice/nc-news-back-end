@@ -12,6 +12,7 @@ const getCommentsByArticleId = (req, res, next) => {
     .catch((err) => next(err))
 }
 
+     
 const postCommentByArticleId = (req, res, next) => {
     const { article_id } = req.params;
     const { username, body } = req.body;  
@@ -19,41 +20,21 @@ const postCommentByArticleId = (req, res, next) => {
     )
     .then(() => {
         return getProfanityCheck(body)
-        .then((result) => {
-            res.status(201).send({posted_comment: result})
-            .catch((err) => next(err))
-        
-        
-        })
-            if(result.containsProfanity === true) {
-                return Promise.reject({status: 400, msg: 'profanity detected'})
-            } else {
+        .then((profanity) => {
+
+            // if(result.containsProfanity === true) {
+            //     return Promise.reject({status: 400, msg: 'profanity detected'})
+            // } else 
+            {
                 return insertCommentByArticleId(article_id, username, body)       
                 .then(result => {
+                res.status(201).send({posted_comment: result, profanity: profanity})
                 })
+                .catch((err) => next(err))
             }
+        })
     })
 }      
-// const postCommentByArticleId = (req, res, next) => {
-//     const { article_id } = req.params;
-//     const { username, body } = req.body;  
-//     Promise.all([fetchArticleById(article_id)]
-//     )
-//     .then(() => {
-//         return getProfanityCheck(body)
-//         .then((result) => {
-//             if(result.containsProfanity === true) {
-//                 return Promise.reject({status: 400, msg: 'profanity detected'})
-//             } else {
-//                 return insertCommentByArticleId(article_id, username, body)       
-//                 .then(result => {
-//                 res.status(201).send({posted_comment: result})
-//                 })
-//                 .catch((err) => next(err))
-//             }
-//         })
-//     })
-// }      
 
     
 
